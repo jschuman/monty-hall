@@ -47,6 +47,7 @@ const FlipCard = ({
 
   return (
     <Box
+      data-testid="flip-card"
       sx={{
         width: '180px',
         height: '220px',
