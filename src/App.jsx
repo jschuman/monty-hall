@@ -221,14 +221,69 @@ function App() {
     for (let i = 0; i < numGames; i++) {
       const { won, goldCard, chosenCard, revealedCard, finalChoice } = simulateGame(strategy)
       
-      // Show the game being played
-      setGameState({
-        goldCard,
-        chosenCard,
-        revealedCard,
-        finalChoice: strategy,
-        gamePhase: 'final'
-      })
+      // Show the full game flow for 10 games, quick for others
+      if (numGames === 10) {
+        // Step 1: Show initial choice
+        setGameState({
+          goldCard,
+          chosenCard,
+          revealedCard: null,
+          finalChoice: null,
+          gamePhase: 'chosen'
+        })
+        await new Promise(resolve => setTimeout(resolve, 500))
+        
+        // Step 2: Show host revealing goat
+        setGameState({
+          goldCard,
+          chosenCard,
+          revealedCard,
+          finalChoice: null,
+          gamePhase: 'decision'
+        })
+        await new Promise(resolve => setTimeout(resolve, 500))
+        
+        // Step 3: Show final result
+        let finalChosenCard = chosenCard
+        if (strategy === 'switch') {
+          // Find the remaining card (not chosen, not revealed)
+          for (let i = 1; i <= 3; i++) {
+            if (i !== chosenCard && i !== revealedCard) {
+              finalChosenCard = i
+              break
+            }
+          }
+        }
+        
+        setGameState({
+          goldCard,
+          chosenCard: finalChosenCard,
+          revealedCard,
+          finalChoice: strategy,
+          gamePhase: 'final'
+        })
+        await new Promise(resolve => setTimeout(resolve, 500))
+      } else {
+        // For 100/1000 games, just show final result quickly
+        let finalChosenCard = chosenCard
+        if (strategy === 'switch') {
+          // Find the remaining card (not chosen, not revealed)
+          for (let i = 1; i <= 3; i++) {
+            if (i !== chosenCard && i !== revealedCard) {
+              finalChosenCard = i
+              break
+            }
+          }
+        }
+        
+        setGameState({
+          goldCard,
+          chosenCard: finalChosenCard,
+          revealedCard,
+          finalChoice: strategy,
+          gamePhase: 'final'
+        })
+      }
       
       newStats.totalGames += 1
       if (strategy === 'stay') {
@@ -250,9 +305,11 @@ function App() {
       // Update statistics after each game
       setStatistics({ ...newStats })
       
-      // Delay to make games visible (faster for more games)
-      const delay = numGames <= 10 ? 500 : numGames <= 100 ? 100 : 50
-      await new Promise(resolve => setTimeout(resolve, delay))
+      // Additional delay for 100/1000 games
+      if (numGames > 10) {
+        const delay = numGames === 100 ? 100 : 33
+        await new Promise(resolve => setTimeout(resolve, delay))
+      }
     }
 
     // Reset to initial state
@@ -290,17 +347,6 @@ function App() {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             The Monty Hall Problem
           </Typography>
-          <Button
-            color="inherit"
-            startIcon={<RefreshIcon />}
-            onClick={resetGame}
-            sx={{ 
-              bgcolor: 'rgba(255,255,255,0.1)',
-              '&:hover': { bgcolor: 'rgba(255,255,255,0.2)' }
-            }}
-          >
-            New Game
-          </Button>
         </Toolbar>
       </AppBar>
 
@@ -413,11 +459,26 @@ function App() {
                       : 'Better luck next time!'
                     }
                   </Typography>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant="body2" color="text.secondary" paragraph>
                     You {gameState.finalChoice === 'stay' ? 'stayed' : 'switched'} and chose Card {gameState.chosenCard}.
                     <br/>
                     The gold was behind Card {gameState.goldCard}.
                   </Typography>
+                  <Button
+                    variant="outlined"
+                    startIcon={<RefreshIcon />}
+                    onClick={resetGame}
+                    sx={{
+                      borderColor: gameState.chosenCard === gameState.goldCard ? '#155724' : '#721c24',
+                      color: gameState.chosenCard === gameState.goldCard ? '#155724' : '#721c24',
+                      '&:hover': { 
+                        borderColor: gameState.chosenCard === gameState.goldCard ? '#0d3e0d' : '#4a1515',
+                        backgroundColor: gameState.chosenCard === gameState.goldCard ? 'rgba(21, 87, 36, 0.1)' : 'rgba(114, 28, 36, 0.1)'
+                      }
+                    }}
+                  >
+                    New Game
+                  </Button>
                 </>
               )}
 
