@@ -1,0 +1,42 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="potGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8B4513;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#A0522D;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#FFA500;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FFD700;stop-opacity:1" />
+    </linearGradient>
+    <radialGradient id="goldShine" cx="50%" cy="30%" r="50%">
+      <stop offset="0%" style="stop-color:#FFFF99;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FFD700;stop-opacity:1" />
+    </radialGradient>
+  </defs>
+  
+  <!-- Pot body -->
+  <ellipse cx="100" cy="140" rx="35" ry="25" fill="url(#potGradient)"/>
+  
+  <!-- Pot rim -->
+  <ellipse cx="100" cy="115" rx="40" ry="8" fill="url(#potGradient)"/>
+  
+  <!-- Pot handle -->
+  <path d="M 65 120 Q 50 100 65 80" stroke="url(#potGradient)" stroke-width="8" fill="none"/>
+  
+  <!-- Gold coins spilling out -->
+  <circle cx="100" cy="100" r="12" fill="url(#goldShine)"/>
+  <circle cx="85" cy="95" r="10" fill="url(#goldShine)"/>
+  <circle cx="115" cy="95" r="10" fill="url(#goldShine)"/>
+  <circle cx="100" cy="80" r="8" fill="url(#goldShine)"/>
+  <circle cx="90" cy="85" r="6" fill="url(#goldShine)"/>
+  <circle cx="110" cy="85" r="6" fill="url(#goldShine)"/>
+  
+  <!-- Sparkles -->
+  <g fill="#FFFF99">
+    <polygon points="70,70 72,76 78,76 73,80 75,86 70,82 65,86 67,80 62,76 68,76" opacity="0.8"/>
+    <polygon points="130,75 132,81 138,81 133,85 135,91 130,87 125,91 127,85 122,81 128,81" opacity="0.6"/>
+    <polygon points="80,60 81,63 84,63 82,65 83,68 80,66 77,68 78,65 76,63 79,63" opacity="0.7"/>
+    <polygon points="120,55 121,58 124,58 122,60 123,63 120,61 117,63 118,60 116,58 119,58" opacity="0.5"/>
+  </g>
+</svg>

@@ -1,0 +1,38 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="goatGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8B4513;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#A0522D;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Goat body -->
+  <ellipse cx="100" cy="120" rx="40" ry="30" fill="url(#goatGradient)"/>
+  
+  <!-- Goat head -->
+  <ellipse cx="100" cy="80" rx="25" ry="30" fill="url(#goatGradient)"/>
+  
+  <!-- Goat ears -->
+  <ellipse cx="85" cy="65" rx="8" ry="12" fill="url(#goatGradient)"/>
+  <ellipse cx="115" cy="65" rx="8" ry="12" fill="url(#goatGradient)"/>
+  
+  <!-- Goat horns -->
+  <path d="M 90 60 Q 85 50 90 45" stroke="#654321" stroke-width="3" fill="none"/>
+  <path d="M 110 60 Q 115 50 110 45" stroke="#654321" stroke-width="3" fill="none"/>
+  
+  <!-- Goat eyes -->
+  <circle cx="95" cy="75" r="3" fill="black"/>
+  <circle cx="105" cy="75" r="3" fill="black"/>
+  
+  <!-- Goat nose -->
+  <ellipse cx="100" cy="85" rx="2" ry="1.5" fill="black"/>
+  
+  <!-- Goat legs -->
+  <rect x="85" y="140" width="6" height="20" fill="url(#goatGradient)"/>
+  <rect x="95" y="140" width="6" height="20" fill="url(#goatGradient)"/>
+  <rect x="105" y="140" width="6" height="20" fill="url(#goatGradient)"/>
+  <rect x="115" y="140" width="6" height="20" fill="url(#goatGradient)"/>
+  
+  <!-- Goat tail -->
+  <path d="M 140 120 Q 150 110 145 100" stroke="url(#goatGradient)" stroke-width="4" fill="none"/>
+</svg>
