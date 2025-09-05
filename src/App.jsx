@@ -8,6 +8,14 @@ import {
   Grid,
   Paper,
   Button,
+  FormControl,
+  FormLabel,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  Select,
+  MenuItem,
+  InputLabel,
 } from '@mui/material'
 import {
   Casino as CasinoIcon,
@@ -33,6 +41,13 @@ function App() {
     stayLosses: 0,
     switchLosses: 0
   })
+
+  const [autoPlaySettings, setAutoPlaySettings] = useState({
+    strategy: 'switch', // 'switch' or 'stay'
+    numGames: 100
+  })
+
+  const [isAutoPlaying, setIsAutoPlaying] = useState(false)
 
   const handleCardClick = (cardNumber) => {
     if (gameState.gamePhase === 'initial') {
@@ -144,6 +159,112 @@ function App() {
       finalChoice: null,
       gamePhase: 'initial'
     })
+  }
+
+  const simulateGame = (strategy) => {
+    // Randomly place gold
+    const goldCard = Math.floor(Math.random() * 3) + 1
+    // Player randomly chooses initial card
+    const chosenCard = Math.floor(Math.random() * 3) + 1
+    
+    // Host reveals a goat (not the chosen card, not the gold card)
+    let revealedCard = null
+    for (let i = 1; i <= 3; i++) {
+      if (i !== chosenCard && i !== goldCard) {
+        revealedCard = i
+        break
+      }
+    }
+    
+    let finalChoice = chosenCard
+    
+    if (strategy === 'switch') {
+      // Switch to the remaining card (not chosen, not revealed)
+      for (let i = 1; i <= 3; i++) {
+        if (i !== chosenCard && i !== revealedCard) {
+          finalChoice = i
+          break
+        }
+      }
+    }
+    
+    const won = finalChoice === goldCard
+    return { won, strategy, goldCard, chosenCard, revealedCard, finalChoice }
+  }
+
+  const handleAutoPlay = async () => {
+    setIsAutoPlaying(true)
+    
+    // Reset statistics
+    setStatistics({
+      totalGames: 0,
+      stayGames: 0,
+      switchGames: 0,
+      stayWins: 0,
+      switchWins: 0,
+      stayLosses: 0,
+      switchLosses: 0
+    })
+
+    // Simulate games
+    const { strategy, numGames } = autoPlaySettings
+    let newStats = {
+      totalGames: 0,
+      stayGames: 0,
+      switchGames: 0,
+      stayWins: 0,
+      switchWins: 0,
+      stayLosses: 0,
+      switchLosses: 0
+    }
+
+    for (let i = 0; i < numGames; i++) {
+      const { won, goldCard, chosenCard, revealedCard, finalChoice } = simulateGame(strategy)
+      
+      // Show the game being played
+      setGameState({
+        goldCard,
+        chosenCard,
+        revealedCard,
+        finalChoice: strategy,
+        gamePhase: 'final'
+      })
+      
+      newStats.totalGames += 1
+      if (strategy === 'stay') {
+        newStats.stayGames += 1
+        if (won) {
+          newStats.stayWins += 1
+        } else {
+          newStats.stayLosses += 1
+        }
+      } else {
+        newStats.switchGames += 1
+        if (won) {
+          newStats.switchWins += 1
+        } else {
+          newStats.switchLosses += 1
+        }
+      }
+
+      // Update statistics after each game
+      setStatistics({ ...newStats })
+      
+      // Delay to make games visible (faster for more games)
+      const delay = numGames <= 10 ? 500 : numGames <= 100 ? 100 : 50
+      await new Promise(resolve => setTimeout(resolve, delay))
+    }
+
+    // Reset to initial state
+    setGameState({
+      goldCard: Math.floor(Math.random() * 3) + 1,
+      chosenCard: null,
+      revealedCard: null,
+      finalChoice: null,
+      gamePhase: 'initial'
+    })
+
+    setIsAutoPlaying(false)
   }
 
   const getInstructions = () => {
@@ -440,6 +561,88 @@ function App() {
             </Paper>
           </Grid>
 
+          {/* Auto Play Panel */}
+          <Grid item xs={12}>
+            <Paper elevation={2} sx={{ p: 3, bgcolor: '#f0f8ff' }}>
+              <Typography variant="h6" gutterBottom sx={{ color: '#1976d2', mb: 3 }}>
+                🚀 Auto Play
+              </Typography>
+              <Grid container spacing={3} alignItems="center">
+                <Grid item xs={12} md={4}>
+                  <FormControl component="fieldset">
+                    <FormLabel component="legend" sx={{ color: '#1976d2', fontWeight: 'bold' }}>
+                      Strategy
+                    </FormLabel>
+                    <RadioGroup
+                      value={autoPlaySettings.strategy}
+                      onChange={(e) => setAutoPlaySettings(prev => ({ ...prev, strategy: e.target.value }))}
+                      row
+                    >
+                      <FormControlLabel 
+                        value="stay" 
+                        control={<Radio />} 
+                        label="🏠 Stay" 
+                        disabled={isAutoPlaying}
+                      />
+                      <FormControlLabel 
+                        value="switch" 
+                        control={<Radio />} 
+                        label="🔄 Switch" 
+                        disabled={isAutoPlaying}
+                      />
+                    </RadioGroup>
+                  </FormControl>
+                </Grid>
+                
+                <Grid item xs={12} md={4}>
+                  <FormControl fullWidth>
+                    <InputLabel>Number of Games</InputLabel>
+                    <Select
+                      value={autoPlaySettings.numGames}
+                      onChange={(e) => setAutoPlaySettings(prev => ({ ...prev, numGames: e.target.value }))}
+                      label="Number of Games"
+                      disabled={isAutoPlaying}
+                    >
+                      <MenuItem value={10}>10 games</MenuItem>
+                      <MenuItem value={100}>100 games</MenuItem>
+                      <MenuItem value={1000}>1000 games</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+                
+                <Grid item xs={12} md={4}>
+                  <Button
+                    variant="contained"
+                    size="large"
+                    onClick={handleAutoPlay}
+                    disabled={isAutoPlaying}
+                    sx={{
+                      bgcolor: '#1976d2',
+                      '&:hover': { bgcolor: '#1565c0' },
+                      py: 1.5,
+                      px: 4,
+                      fontSize: '1.1rem',
+                      fontWeight: 'bold',
+                      width: '100%'
+                    }}
+                  >
+                    {isAutoPlaying ? '⏳ Running...' : '🚀 Begin'}
+                  </Button>
+                </Grid>
+              </Grid>
+              
+              {isAutoPlaying && (
+                <Box sx={{ mt: 2, p: 2, bgcolor: '#e3f2fd', borderRadius: 2, textAlign: 'center' }}>
+                  <Typography variant="body2" color="text.secondary">
+                    🔄 Running {autoPlaySettings.numGames} games with {autoPlaySettings.strategy} strategy...
+                    <br/>
+                    Watch the statistics update in real-time!
+                  </Typography>
+                </Box>
+              )}
+            </Paper>
+          </Grid>
+
           {/* Instructions */}
           <Grid item xs={12}>
             <Paper elevation={1} sx={{ p: 3, textAlign: 'center', bgcolor: '#e8f5e8' }}>
@@ -451,7 +654,8 @@ function App() {
                 • The host will reveal a goat from one of the other cards<br/>
                 • Choose to stay with your original choice or switch to the remaining card<br/>
                 • Two cards hide goats 🐐, one card hides a pot of gold 🏆<br/>
-                • Click "New Game" to start over with a new random arrangement
+                • Click "New Game" to start over with a new random arrangement<br/>
+                • Use "Auto Play" to quickly test strategies with many games
               </Typography>
             </Paper>
           </Grid>
